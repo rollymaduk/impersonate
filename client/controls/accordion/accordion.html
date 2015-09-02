@@ -1,23 +1,35 @@
 <template name="rp_impersonate_accordion">
+    {{#if canImpersonate}}
    <ul class="rp_impersonate_accordion">
+       <div class="rp_accordian_body"  >
+       {{#each roles}}
+           {{>rp_impersonate_roleItem name=this.name groups=groups}}
 
-      <li id="one" class="files"><a href="#one">Trucker<span>55</span></a>
-          <ul class="rp_impersonate_roles">
-
-              <li><a href="#"><em>01</em>Dropbox<span>42</span></a></li>
-
-              <li><a href="#"><em>02</em>Skydrive<span>87</span></a></li>
-
-              <li><a href="#"><em>03</em>FTP Server<span>366</span></a></li>
-
-          </ul>
-      </li>
-
-      <li id="two" class="mail"><a href="#two">Mail<span>26</span></a></li>
-
-      <li id="three" class="cloud"><a href="#three">Cloud<span>58</span></a></li>
-
-      <li id="four" class="sign"><a href="#four">Sign Out</a></li>
-
+       {{/each}}
+       </div>
+       <li><a href="#" class="rp_accordian_footer">{{rp_impersonate_user currentUser}}</a></li>
    </ul>
+        {{/if}}
+</template>
+
+<template name="rp_impersonate_roleItem">
+    <li id="one"><a href="#one">{{name}}</a>
+        <ul class="sub-menu rp_impersonate_roles">
+            <div class="rp_roles">
+                {{#each rp_impersonate_group groups ../name}}
+                        <li><a href="#">{{group}}<span>{{users.length}}</span></a>
+                            <ul class="sub-menu2 rp_impersonate_user">
+                            {{#each users}}
+                               {{>rp_impersonate_user}}
+                            {{/each}}
+                            </ul>
+                        </li>
+                {{/each}}
+            </div>
+        </ul>
+    </li>
+</template>
+
+<template name="rp_impersonate_user">
+    <li><a href="#" data-impersonate="{{this._id}}" >{{rp_impersonate_user this}}{{>rp_impersonate_toggle id=this._id user=this}}</a></li>
 </template>

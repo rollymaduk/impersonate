@@ -11,12 +11,29 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-  api.imply('coffeescript');
-  api.imply('templating','client');
+  api.use('jquery');
+  api.use('coffeescript');
+  api.use('reactive-var');
+  api.use('templating','client');
+ /* api.use('abpetkov:switchery','client');*/
+  api.use('alanning:roles');
+  api.use('accounts-base','client');
+  api.use('gwendall:body-events@0.1.4','client');
+  api.imply(['abpetkov:switchery','alanning:roles']);
   api.versionsFrom('1.1.0.2');
-  api.addFiles('client/controls/accordion/accordion.html');
-  api.addFiles('client/controls/accordion/styles.css');
-
+  api.addFiles('client/controls/accordion/accordion.html','client');
+  api.addFiles('client/controls/accordion/cog.png','client');
+  api.addFiles('client/controls/accordion/style.css','client');
+  api.addFiles('client/controls/accordion/accordion.js','client');
+  api.addFiles('client/controls/switch/futurico/futurico.css','client');
+  api.addFiles('client/controls/switch/futurico/futurico.png','client');
+  api.addFiles('client/controls/switch/icheck.min.js','client');
+  api.addFiles('client/controls/switch/toggle_switch.html','client');
+  api.addFiles('client/lib/jquery.slimscroll.min.js','client');
+  api.addFiles('client/impersonate.coffee','client');
+    /*server assets*/
+  api.addFiles('server/impersonate.coffee','server');
+  api.export('Impersonate');
 });
 
 Package.onTest(function(api) {
