@@ -5,6 +5,16 @@ Impersonate =
   field1:'username'
   field2: ''
   _canImpersonate:new ReactiveVar false
+  _view:null
+
+  reset: ()->
+    @_user= null
+    @_token= null
+    @_active.set(false)
+    @_canImpersonate.set(false)
+    Blaze.remove(@_view) if @_view
+    @_view=undefined
+
 
   do: (toUser, cb)->
     params =
@@ -38,7 +48,7 @@ Impersonate =
       if !error
         Impersonate._active.set false
       if !!(cb and cb.constructor and cb.apply)
-        cb.apply @, [err, res.toUser]
+        cb.apply @, [error, response.toUser]
 
 addSlimScroll=(selector)->
   selector.each (i,v)->
@@ -50,7 +60,7 @@ isImpersonating=(userId)->
   Impersonate._active.get() and userId == Meteor.userId()
 
 toggleAccordian=->
-  $('.rp_accordian_body').slideToggle('normal')
+  $('.rp_accordion_body').slideToggle('normal')
   addSlimScroll($('.rp_roles'))
 
 
@@ -67,18 +77,20 @@ Template.registerHelper "isImpersonating", (userId)->
 
 
 Meteor.startup ()->
-  Blaze.render Template.rp_impersonate_accordion,$('body')[0]
-  null
-
   Tracker.autorun ->
-    user=Impersonate._user or Meteor.userId()
-    Meteor.call 'canImpersonate',user,(err,res)->
-      if res then Impersonate._canImpersonate.set res
+    if Meteor.userId()
+      user= Impersonate._user or Meteor.userId()
+      if user
+        Meteor.call 'canImpersonate',user,(err,res)->
+          unless err
+            Impersonate._canImpersonate.set res
+            unless Impersonate._view
+              Impersonate._view=Blaze.render Template.rp_impersonate_accordion,$('body')[0] if res
+            console.log 'show widget'
+    else
+      console.log 'hide widget'
+      Impersonate.reset()
 
-    if not Meteor.userId()
-      Impersonate._canImpersonate.set(false)
-
-    Meteor.subscribe('rp_impersonate_pub',user)
 
 
 
@@ -119,10 +131,18 @@ Template.rp_impersonate_user.rendered=->
   null
 
 
+Template.rp_impersonate_accordion.created=->
+  @autorun =>
+    user=Impersonate._user or Meteor.userId()
+    @subscribe('rp_impersonate_pub',user)
+
+
+Template.rp_impersonate_accordion.rendered=->
+  @$(".rp_impersonate_accordion li > .sub-menu").last().addClass('active').slideToggle('normal')
 
 
 Template.rp_impersonate_accordion.events
-  'click .rp_accordian_footer':(evt,temp)->
+  'click .rp_accordion_footer':(evt,temp)->
     toggleAccordian()
 
 Template.rp_impersonate_accordion.helpers

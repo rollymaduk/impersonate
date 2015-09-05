@@ -3,6 +3,7 @@
     position:fixed;
     z-index: 300083003;
     left:45%;
+    top:0;
 }
 
 
@@ -22,7 +23,7 @@
 }
 
 
-.rp_impersonate_accordion  li  > a.rp_accordian_footer{
+.rp_impersonate_accordion  li  > a.rp_accordion_footer{
     -webkit-border-radius: 0 0 10px 2px;
     -moz-border-radius: 0 0 10px 2px;
     border-radius: 0 0 10px 2px;
@@ -163,11 +164,11 @@
     /*color: rgba(255, 255, 255, 0.5);*/
 }
 
-.rp_impersonate_accordion li > .submenu {
+.rp_impersonate_accordion li >.sub-menu {
     display: none;
 }
 
-.rp_accordian_body
+.rp_accordion_body
 {
     display:none;
 }

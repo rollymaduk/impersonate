@@ -6,12 +6,12 @@ $(document).ready(function() {
 
     // Store variables
 
-    var accordion_head = $('.accordion > li > a'),
-        accordion_body = $('.accordion li > .sub-menu');
+    var accordion_head = $('.rp_impersonate_accordion > li > a'),
+        accordion_body = $('.rp_impersonate_accordion li > .sub-menu');
 
-    // Open the first tab on load
+    // Open the last tab on load
 
-    accordion_head.first().addClass('active').next().slideDown('normal');
+    accordion_body.last().addClass('active').slideToggle('normal');
 
     // Click function
 

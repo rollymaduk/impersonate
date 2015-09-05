@@ -1,19 +1,19 @@
 <template name="rp_impersonate_accordion">
-    {{#if canImpersonate}}
+{{#if Template.subscriptionsReady}}
    <ul class="rp_impersonate_accordion">
-       <div class="rp_accordian_body"  >
+       <div class="rp_accordion_body"  >
        {{#each roles}}
            {{>rp_impersonate_roleItem name=this.name groups=groups}}
 
        {{/each}}
        </div>
-       <li><a href="#" class="rp_accordian_footer">{{rp_impersonate_user currentUser}}</a></li>
+       <li><a href="#" class="rp_accordion_footer">{{rp_impersonate_user currentUser}}</a></li>
    </ul>
-        {{/if}}
+{{/if}}
 </template>
 
 <template name="rp_impersonate_roleItem">
-    <li id="one"><a href="#one">{{name}}</a>
+    <li id="one"><a href="#">{{name}}</a>
         <ul class="sub-menu rp_impersonate_roles">
             <div class="rp_roles">
                 {{#each rp_impersonate_group groups ../name}}

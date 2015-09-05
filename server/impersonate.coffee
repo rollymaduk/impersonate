@@ -22,6 +22,8 @@ Meteor.publish 'rp_impersonate_pub',(userId)->
   if Impersonate.canImpersonate(userId)
     limit=Impersonate.limit or 50
     [Meteor.users.find({},{limit:limit}),Meteor.roles.find({},{limit:limit})]
+  else
+    @ready()
 
 
 Meteor.methods
