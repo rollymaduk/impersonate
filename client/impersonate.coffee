@@ -6,6 +6,7 @@ Impersonate =
   field2: ''
   _canImpersonate:new ReactiveVar false
   _view:null
+  _uiIsOpen:false
 
   reset: ()->
     @_user= null
@@ -14,6 +15,7 @@ Impersonate =
     @_canImpersonate.set(false)
     Blaze.remove(@_view) if @_view
     @_view=undefined
+    @uiIsOpen=false
 
 
   do: (toUser, cb)->
@@ -23,9 +25,6 @@ Impersonate =
     if Impersonate._user
       params.fromUser = Impersonate._user
       params.token = Impersonate._token
-
-    console.log Impersonate._user
-    console.log Impersonate._token
 
     Meteor.call 'impersonate', params,
       (error, response)->
@@ -62,6 +61,7 @@ isImpersonating=(userId)->
 toggleAccordian=->
   $('.rp_accordion_body').slideToggle('normal')
   addSlimScroll($('.rp_roles'))
+  Impersonate._uiIsOpen=if Impersonate._uiIsOpen then false else true
 
 
 Template.body.events
@@ -71,6 +71,10 @@ Template.body.events
 
   'click [data-unimpersonate]': (event, template)->
     Impersonate.undo()
+
+  'click':(event,template)->
+    unless $(event.target).closest(".rp_impersonate_accordion").length
+      toggleAccordian() if Impersonate._uiIsOpen
 
 Template.registerHelper "isImpersonating", (userId)->
   isImpersonating(userId)
@@ -86,9 +90,7 @@ Meteor.startup ()->
             Impersonate._canImpersonate.set res
             unless Impersonate._view
               Impersonate._view=Blaze.render Template.rp_impersonate_accordion,$('body')[0] if res
-            console.log 'show widget'
     else
-      console.log 'hide widget'
       Impersonate.reset()
 
 
@@ -138,7 +140,9 @@ Template.rp_impersonate_accordion.created=->
 
 
 Template.rp_impersonate_accordion.rendered=->
-  @$(".rp_impersonate_accordion li > .sub-menu").last().addClass('active').slideToggle('normal')
+  toggleLastMenu=()->
+    @$(".rp_impersonate_accordion li > .sub-menu").last().addClass('active').slideToggle('normal')
+  _.delay(toggleLastMenu,300)
 
 
 Template.rp_impersonate_accordion.events
@@ -158,6 +162,13 @@ Template.rp_impersonate_accordion.helpers
     groups=Meteor.users.find().map (doc)->
       Roles.getGroupsForUser doc
     _.uniq(_.flatten(groups))
+
+Template.rp_impersonate_roleItem.events
+  'click .roleItemLink':(evt,temp)->
+    item=temp.$(evt.currentTarget).next()
+    unless item.hasClass('active')
+      $('.rp_impersonate_accordion li > .active').slideToggle('normal').removeClass('active')
+      item.addClass('active').slideToggle('active')
 
 
 
