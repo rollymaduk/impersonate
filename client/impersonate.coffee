@@ -95,7 +95,6 @@ Meteor.startup ()->
 
 
 
-
 Template.registerHelper 'rp_impersonate_group',(groups,role)->
   users=Roles.getUsersInRole(role).fetch()
   if users.length

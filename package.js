@@ -19,7 +19,6 @@ Package.onUse(function(api) {
   api.use('alanning:roles');
   api.use('accounts-base','client');
   api.use('gwendall:body-events@0.1.4','client');
-  api.imply(['abpetkov:switchery','alanning:roles']);
   api.versionsFrom('1.1.0.2');
   api.addFiles('client/controls/accordion/accordion.html','client');
   api.addFiles('client/controls/accordion/cog.png','client');
