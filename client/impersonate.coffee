@@ -1,54 +1,3 @@
-Impersonate =
-  _user: null
-  _token: null
-  _active: new ReactiveVar false
-  field1:'username'
-  field2: ''
-  _canImpersonate:new ReactiveVar false
-  _view:null
-  _uiIsOpen:false
-
-  reset: ()->
-    @_user= null
-    @_token= null
-    @_active.set(false)
-    @_canImpersonate.set(false)
-    Blaze.remove(@_view) if @_view
-    @_view=undefined
-    @uiIsOpen=false
-
-
-  do: (toUser, cb)->
-    params =
-      toUser: toUser
-
-    if Impersonate._user
-      params.fromUser = Impersonate._user
-      params.token = Impersonate._token
-
-    Meteor.call 'impersonate', params,
-      (error, response)->
-        if error
-          console.log "Can't impersonate user: ", error
-        else
-          if !Impersonate._user
-            Impersonate._user = response.fromUser
-            Impersonate._token = response.token
-
-          Impersonate._active.set true
-          Meteor.connection.setUserId(response.toUser)
-
-          ###Router.go Impersonate.route###
-        if !!(cb and cb.constructor and cb.apply)
-          cb.apply @, [error, response.toUser]
-
-  undo: (cb)->
-    Impersonate.do Impersonate._user, (error, response)->
-      if !error
-        Impersonate._active.set false
-      if !!(cb and cb.constructor and cb.apply)
-        cb.apply @, [error, response.toUser]
-
 addSlimScroll=(selector)->
   selector.each (i,v)->
     if $(v).height()>=100
@@ -81,19 +30,17 @@ Template.registerHelper "isImpersonating", (userId)->
 
 
 Meteor.startup ()->
+  _logout=Meteor.logout
   Tracker.autorun ->
     if Meteor.userId()
-      user= Impersonate._user or Meteor.userId()
-      if user
-        Meteor.call 'canImpersonate',user,(err,res)->
-          unless err
-            Impersonate._canImpersonate.set res
-            unless Impersonate._view
-              Impersonate._view=Blaze.render Template.rp_impersonate_accordion,$('body')[0] if res
-    else
-      Impersonate.reset()
+      if Impersonate.canImpersonate Impersonate._user or Meteor.userId()
+        unless Impersonate._view
+          Impersonate._view=Blaze.render Template.rp_impersonate_accordion,$('body')[0]
 
-
+  Meteor.logout=()->
+    console.log "logging out via custom code"
+    Impersonate.reset()
+    _logout.apply(Meteor,arguments)
 
 Template.registerHelper 'rp_impersonate_group',(groups,role)->
   users=Roles.getUsersInRole(role).fetch()
@@ -106,7 +53,6 @@ Template.registerHelper 'rp_impersonate_group',(groups,role)->
         {group:group,users:users}
     )
 
-
 Template.registerHelper 'rp_impersonate_user',(user)->
   field_1_Items=Impersonate.field1.split('.')
   field_2_Items=Impersonate.field2.split('.')
@@ -115,7 +61,6 @@ Template.registerHelper 'rp_impersonate_user',(user)->
     field2=if field_2_Items.length then Meteor._get(user,field_2_Items...) else ''
     "#{field1} #{field2}"
   else ""
-
 
 Template.rp_impersonate_user.rendered=->
   sel=$("##{@data._id}")
@@ -133,9 +78,7 @@ Template.rp_impersonate_user.rendered=->
 
 
 Template.rp_impersonate_accordion.created=->
-  @autorun =>
-    user=Impersonate._user or Meteor.userId()
-    @subscribe('rp_impersonate_pub',user)
+    @subscribe('rp_impersonate_pub',50)
 
 
 Template.rp_impersonate_accordion.rendered=->

@@ -21,15 +21,16 @@ Package.onUse(function(api) {
   api.use('gwendall:body-events@0.1.4','client');
   api.versionsFrom('1.1.0.2');
   api.addFiles('client/controls/accordion/accordion.html','client');
-  api.addFiles('client/controls/accordion/cog.png','client');
+  api.addAssets('client/controls/accordion/cog.png','client');
   api.addFiles('client/controls/accordion/style.css','client');
   api.addFiles('client/controls/accordion/accordion.js','client');
   api.addFiles('client/controls/switch/futurico/futurico.css','client');
-  api.addFiles('client/controls/switch/futurico/futurico.png','client');
+  api.addAssets('client/controls/switch/futurico/futurico.png','client');
   api.addFiles('client/controls/switch/icheck.min.js','client');
   api.addFiles('client/controls/switch/toggle_switch.html','client');
   api.addFiles('client/lib/jquery.slimscroll.min.js','client');
   api.addFiles('client/impersonate.coffee','client');
+  api.addFiles('common/impersonate.coffee',['client','server']);
     /*server assets*/
   api.addFiles('server/impersonate.coffee','server');
   api.export('Impersonate');
